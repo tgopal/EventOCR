@@ -1,7 +1,11 @@
 package com.example.tgopal.eventreader;
 
+import android.accounts.AccountManager;
+import android.app.IntentService;
 import android.app.ProgressDialog;
+import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.AsyncTask;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -14,6 +18,10 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.github.library.bubbleview.BubbleTextView;
+import com.google.android.gms.common.AccountPicker;
+import com.google.api.client.googleapis.extensions.android.gms.auth.GoogleAccountCredential;
+import com.google.api.client.util.ExponentialBackOff;
+import com.google.api.services.calendar.CalendarScopes;
 import com.ibm.watson.developer_cloud.natural_language_understanding.v1.NaturalLanguageUnderstanding;
 import com.ibm.watson.developer_cloud.natural_language_understanding.v1.model.AnalysisResults;
 import com.ibm.watson.developer_cloud.natural_language_understanding.v1.model.AnalyzeOptions;
@@ -27,6 +35,7 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.util.Arrays;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -36,10 +45,16 @@ public class ProcessTextActivity extends AppCompatActivity {
     private ProgressDialog mDialog;
     private String textToAnalyze;
     private String dateOfEventRes;
+    private String month, day, year;
     private String categoriesRes;
     private String peopleRes;
     private String locRes;
     private String keywordsRes;
+    private static final int REQ_CHOOSE_ACCOUNT = 1;
+    private static final String PREF_ACCOUNT_NAME = "accountName";
+    private GoogleAccountCredential mCredential;
+    private String googleAcct;
+    private static final String[] SCOPES = { CalendarScopes.CALENDAR_READONLY };
 
     private class AskWatsonTask extends AsyncTask<Void, Void, String> {
         @Override
@@ -110,6 +125,10 @@ public class ProcessTextActivity extends AppCompatActivity {
         if (moDayYear[1] != null) sb.append(moDayYear[1] + " ");
         if (moDayYear[2] != null) sb.append(moDayYear[2] + " ");
 
+        month = moDayYear[0];
+        day = moDayYear[1];
+        year = moDayYear[2];
+
         BubbleTextView date = (BubbleTextView) findViewById(R.id.bubble_date);
         date.setText(sb.toString());
         dateOfEventRes = sb.toString();
@@ -118,13 +137,61 @@ public class ProcessTextActivity extends AppCompatActivity {
     }
 
     public void sendEventToCalendar(View v) {
-        System.out.println(dateOfEventRes);
-        System.out.println(locRes);
-        System.out.println(peopleRes);
-        System.out.println(keywordsRes);
-        System.out.println(categoriesRes);
+
         Intent auth = new Intent(this, AuthActivity.class);
+        auth.putExtra("month", month);
+        auth.putExtra("day", day);
+        auth.putExtra("year", year);
+        auth.putExtra("loc", locRes);
+        auth.putExtra("people", peopleRes);
+        auth.putExtra("keywords", keywordsRes);
+        auth.putExtra("categories", categoriesRes);
         startActivity(auth);
+
+        // Initialize credentials and service object.
+        /*mCredential = GoogleAccountCredential.usingOAuth2(
+                getApplicationContext(), Arrays.asList(SCOPES))
+                .setBackOff(new ExponentialBackOff());
+        startActivityForResult(
+                mCredential.newChooseAccountIntent(),
+                REQ_CHOOSE_ACCOUNT);*/
+    }
+
+    @Override
+    protected void onActivityResult(final int reqCode, final int resCode, final Intent data) {
+        if (resCode == RESULT_OK && data != null &&
+                data.getExtras() != null) {
+            String accountName =
+                    data.getStringExtra(AccountManager.KEY_ACCOUNT_NAME);
+            if (accountName != null) {
+                SharedPreferences settings =
+                        getPreferences(Context.MODE_PRIVATE);
+                SharedPreferences.Editor editor = settings.edit();
+                editor.putString(PREF_ACCOUNT_NAME, accountName);
+                editor.apply();
+                setGoogleAccountName(accountName);
+
+                /*Intent mIntentService = new Intent(this, GoogleCalendarService.class);
+                mIntentService.putExtra("acctName", googleAcct);
+                mIntentService.putExtra("month", month);
+                mIntentService.putExtra("day", day);
+                mIntentService.putExtra("year", year);
+                mIntentService.putExtra("loc", locRes);
+                mIntentService.putExtra("people", peopleRes);
+                mIntentService.putExtra("keywords", keywordsRes);
+                mIntentService.putExtra("categories", categoriesRes);
+
+                startService(mIntentService);*/
+            }
+        }
+    }
+
+    public String getGoogleAccountName() {
+        return googleAcct;
+    }
+
+    public void setGoogleAccountName(String acct) {
+        googleAcct = acct;
     }
 
     public void processData(String result) {

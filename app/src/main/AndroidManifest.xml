@@ -8,10 +8,12 @@
 
     <uses-permission
         android:name="android.permission.WRITE_EXTERNAL_STORAGE"
+        android:minSdkVersion="15"
         android:maxSdkVersion="18" />
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
     <uses-permission android:name="android.permission.GET_ACCOUNTS" />
+    <uses-permission android:name="android.permission.WRITE_CALENDAR" />
 
     <application
         android:allowBackup="true"
@@ -38,12 +40,16 @@
                 android:resource="@xml/file_paths" />
         </provider>
 
+        <service
+            android:name=".GoogleCalendarService"
+            android:exported="false"/>
+
         <meta-data
             android:name="com.google.android.gms.vision.DEPENDENCIES"
             android:value="ocr" />
 
-        <activity android:name=".AuthActivity" />
         <activity android:name=".ProcessTextActivity"></activity>
+        <activity android:name=".AuthActivity"></activity>
     </application>
 
 </manifest>

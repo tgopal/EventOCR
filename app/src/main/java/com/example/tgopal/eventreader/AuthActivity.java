@@ -41,10 +41,15 @@ import android.widget.TextView;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import pub.devrel.easypermissions.AfterPermissionGranted;
 import pub.devrel.easypermissions.EasyPermissions;
+
+import static android.Manifest.permission.WRITE_CALENDAR;
 
 public class AuthActivity extends Activity
         implements EasyPermissions.PermissionCallbacks {
@@ -60,7 +65,9 @@ public class AuthActivity extends Activity
 
     private static final String BUTTON_TEXT = "Call Google Calendar API";
     private static final String PREF_ACCOUNT_NAME = "accountName";
-    private static final String[] SCOPES = { CalendarScopes.CALENDAR_READONLY };
+    private static final String[] SCOPES = { CalendarScopes.CALENDAR };
+
+    private String month, day, year, location, people, categories, keywords;
 
     /**
      * Create the main activity.
@@ -69,6 +76,14 @@ public class AuthActivity extends Activity
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        month = getIntent().getExtras().getString("month");
+        day = getIntent().getExtras().getString("day");
+        year = getIntent().getExtras().getString("year");
+        location = getIntent().getExtras().getString("loc");
+        people = getIntent().getExtras().getString("people");
+        categories = getIntent().getExtras().getString("categories");
+        keywords = getIntent().getExtras().getString("keywords");
         LinearLayout activityLayout = new LinearLayout(this);
         LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(
                 LinearLayout.LayoutParams.MATCH_PARENT,
@@ -166,6 +181,7 @@ public class AuthActivity extends Activity
                     this,
                     "This app needs to access your Google account (via Contacts).",
                     REQUEST_PERMISSION_GET_ACCOUNTS,
+                    WRITE_CALENDAR,
                     Manifest.permission.GET_ACCOUNTS);
         }
     }
@@ -318,7 +334,7 @@ public class AuthActivity extends Activity
      * An asynchronous task that handles the Google Calendar API call.
      * Placing the API calls in their own task ensures the UI stays responsive.
      */
-    private class MakeRequestTask extends AsyncTask<Void, Void, List<String>> {
+    private class MakeRequestTask extends AsyncTask<Void, Void, String> {
         private com.google.api.services.calendar.Calendar mService = null;
         private Exception mLastError = null;
 
@@ -327,7 +343,7 @@ public class AuthActivity extends Activity
             JsonFactory jsonFactory = JacksonFactory.getDefaultInstance();
             mService = new com.google.api.services.calendar.Calendar.Builder(
                     transport, jsonFactory, credential)
-                    .setApplicationName("Google Calendar API Android Quickstart")
+                    .setApplicationName("EventOCR")
                     .build();
         }
 
@@ -336,7 +352,7 @@ public class AuthActivity extends Activity
          * @param params no parameters needed for this task.
          */
         @Override
-        protected List<String> doInBackground(Void... params) {
+        protected String doInBackground(Void... params) {
             try {
                 return getDataFromApi();
             } catch (Exception e) {
@@ -351,29 +367,84 @@ public class AuthActivity extends Activity
          * @return List of Strings describing returned events.
          * @throws IOException
          */
-        private List<String> getDataFromApi() throws IOException {
-            // List the next 10 events from the primary calendar.
-            DateTime now = new DateTime(System.currentTimeMillis());
-            List<String> eventStrings = new ArrayList<String>();
-            Events events = mService.events().list("primary")
-                    .setMaxResults(10)
-                    .setTimeMin(now)
-                    .setOrderBy("startTime")
-                    .setSingleEvents(true)
-                    .execute();
-            List<Event> items = events.getItems();
+        private String getDataFromApi() throws IOException {
 
-            for (Event event : items) {
-                DateTime start = event.getStart().getDateTime();
-                if (start == null) {
-                    // All-day events don't have start times, so just use
-                    // the start date.
-                    start = event.getStart().getDate();
-                }
-                eventStrings.add(
-                        String.format("%s (%s)", event.getSummary(), start));
+            StringBuilder desc = new StringBuilder();
+            desc.append("People: " + people + "\n");
+            desc.append("Relates to: " + categories + "\n");
+            desc.append("Key phrases: " + keywords + "\n");
+
+            Event event = new Event()
+                    .setSummary("Event Created by EventReader")
+                    .setLocation(location)
+                    .setDescription(desc.toString());
+
+            String date = convertDate(day, month, year);
+
+            DateTime startDateTime = new DateTime(date + "T09:00:00-08:00");
+            EventDateTime start = new EventDateTime()
+                    .setDateTime(startDateTime)
+                    .setTimeZone("America/Los_Angeles");
+            event.setStart(start);
+
+            DateTime endDateTime = new DateTime(date + "T17:00:00-08:00");
+            EventDateTime end = new EventDateTime()
+                    .setDateTime(endDateTime)
+                    .setTimeZone("America/Los_Angeles");
+            event.setEnd(end);
+
+            EventReminder[] reminderOverrides = new EventReminder[] {
+                    new EventReminder().setMethod("email").setMinutes(24 * 60),
+                    new EventReminder().setMethod("popup").setMinutes(10),
+            };
+            Event.Reminders reminders = new Event.Reminders()
+                    .setUseDefault(false)
+                    .setOverrides(Arrays.asList(reminderOverrides));
+            event.setReminders(reminders);
+
+            String calendarId = "primary";
+            event = mService.events().insert(calendarId, event).execute();
+            System.out.printf("Event created: %s\n", event.getHtmlLink());
+
+            return event.getHtmlLink();
+        }
+
+        private String convertDate(String day, String month, String year) {
+            StringBuilder converted = new StringBuilder();
+            Map<String, String> months = new HashMap<>();
+            months.put("Jan", "01");
+            months.put("January", "01");
+            months.put("Feb", "02");
+            months.put("February", "02");
+            months.put("Mar", "03");
+            months.put("March", "03");
+            months.put("Apr", "04");
+            months.put("April", "04");
+            months.put("May", "05");
+            months.put("Jun", "06");
+            months.put("June", "06");
+            months.put("Jul", "07");
+            months.put("July", "07");
+            months.put("Aug", "08");
+            months.put("August", "08");
+            months.put("Sept", "09");
+            months.put("September", "09");
+            months.put("Oct", "10");
+            months.put("October", "10");
+            months.put("Nov", "11");
+            months.put("November", "11");
+            months.put("Dec", "12");
+            months.put("December", "12");
+
+            converted.append(year + "-");
+            converted.append(months.get(month) + "-");
+
+            if (day.endsWith("th") || day.endsWith("st") || day.endsWith("nd") || day.endsWith("rd")) {
+                day = day.substring(0, day.length()-2);
             }
-            return eventStrings;
+            converted.append(day);
+
+            return converted.toString();
         }
 
 
@@ -384,14 +455,9 @@ public class AuthActivity extends Activity
         }
 
         @Override
-        protected void onPostExecute(List<String> output) {
-            mProgress.hide();
-            if (output == null || output.size() == 0) {
-                mOutputText.setText("No results returned.");
-            } else {
-                output.add(0, "Data retrieved using the Google Calendar API:");
-                mOutputText.setText(TextUtils.join("\n", output));
-            }
+        protected void onPostExecute(String output) {
+            mOutputText.setText(output);
+            mProgress.dismiss();
         }
 
         @Override
