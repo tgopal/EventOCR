@@ -29,7 +29,6 @@ import com.google.android.gms.vision.Frame;
 import com.google.android.gms.vision.text.Text;
 import com.google.android.gms.vision.text.TextBlock;
 import com.google.android.gms.vision.text.TextRecognizer;
-import com.googlecode.tesseract.android.TessBaseAPI;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -40,10 +39,9 @@ import java.io.OutputStream;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
-public class ImageToEventActivity extends AppCompatActivity {
+public class ImageToEventActivity extends AppCompatActivity  {
 
     private Bitmap image;
-    private TessBaseAPI mTess;
     String pathToData = "";
     private ProgressDialog mProgressDialog;
     private CameraSource mCameraSource;
@@ -83,15 +81,16 @@ public class ImageToEventActivity extends AppCompatActivity {
         }
 
         TextRecognizer textRecognizer = new TextRecognizer.Builder(getApplicationContext()).build();
+        StringBuilder sb = new StringBuilder();
         if(textRecognizer.isOperational() && image != null) {
             Frame frame = new Frame.Builder().setBitmap(image).build();
             SparseArray<TextBlock> items = textRecognizer.detect(frame);
-            StringBuilder sb = new StringBuilder();
+
             if (items.size() != 0) {
                 for(int i = 0; i < items.size(); i++) {
                     TextBlock item = items.valueAt(i);
                     sb.append(item.getValue());
-                    sb.append("\n");
+                    sb.append(" ");
                     Log.d("ImageToEventActivity", "Found: " + item.getValue() + "\n");
                 }
             } else {
@@ -101,6 +100,10 @@ public class ImageToEventActivity extends AppCompatActivity {
             OCRTextView.setMovementMethod(new ScrollingMovementMethod());
             OCRTextView.setText(sb.toString());
         }
+
+        Intent auth = new Intent(this, AuthActivity.class);
+        auth.putExtra("ocr_data", sb.toString());
+        startActivity(auth);
     }
 
     private void dispatchTakePictureIntent() {
@@ -148,34 +151,5 @@ public class ImageToEventActivity extends AppCompatActivity {
         Bitmap bitmap = BitmapFactory.decodeFile(mCurrentPhotoPath, bmOptions);
         preview.setImageBitmap(bitmap);
         image = bitmap;
-    }
-
-    private void copyFiles() {
-        try {
-
-            String filepath = pathToData + "/tessdata/eng.traineddata";
-
-            //get access to AssetManager
-            AssetManager assetManager = getAssets();
-
-            //open byte streams for reading/writing
-            InputStream instream = assetManager.open("tessdata/eng.traineddata");
-            OutputStream outstream = new FileOutputStream(filepath);
-
-            //copy the file to the location specified by filepath
-            byte[] buffer = new byte[1024];
-            int read;
-            while ((read = instream.read(buffer)) != -1) {
-                outstream.write(buffer, 0, read);
-            }
-            outstream.flush();
-            outstream.close();
-            instream.close();
-
-        } catch(FileNotFoundException e) {
-            e.printStackTrace();
-        } catch(IOException e) {
-            e.printStackTrace();
-        }
     }
 }
