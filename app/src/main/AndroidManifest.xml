@@ -40,10 +40,6 @@
                 android:resource="@xml/file_paths" />
         </provider>
 
-        <service
-            android:name=".GoogleCalendarService"
-            android:exported="false"/>
-
         <meta-data
             android:name="com.google.android.gms.vision.DEPENDENCIES"
             android:value="ocr" />

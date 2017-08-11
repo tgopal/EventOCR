@@ -170,18 +170,6 @@ public class ProcessTextActivity extends AppCompatActivity {
                 editor.putString(PREF_ACCOUNT_NAME, accountName);
                 editor.apply();
                 setGoogleAccountName(accountName);
-
-                /*Intent mIntentService = new Intent(this, GoogleCalendarService.class);
-                mIntentService.putExtra("acctName", googleAcct);
-                mIntentService.putExtra("month", month);
-                mIntentService.putExtra("day", day);
-                mIntentService.putExtra("year", year);
-                mIntentService.putExtra("loc", locRes);
-                mIntentService.putExtra("people", peopleRes);
-                mIntentService.putExtra("keywords", keywordsRes);
-                mIntentService.putExtra("categories", categoriesRes);
-
-                startService(mIntentService);*/
             }
         }
     }
