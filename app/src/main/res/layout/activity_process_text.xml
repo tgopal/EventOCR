@@ -1,25 +1,228 @@
 <?xml version="1.0" encoding="utf-8"?>
-<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    tools:context="com.example.tgopal.eventreader.ProcessTextActivity">
+    android:layout_height="wrap_content" >
+    <ScrollView
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent" >
+        <RelativeLayout
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            tools:context="com.example.tgopal.eventreader.ProcessTextActivity">
 
-    <EditText
-        android:id="@+id/edit_text"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:text="Let's analyze this text!"
-        tools:layout_editor_absoluteX="8dp"
-        tools:layout_editor_absoluteY="0dp" />
+            <com.github.library.bubbleview.BubbleTextView
+                android:id="@+id/event_date"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="10dp"
+                android:padding="10dp"
+                android:text="Date Found:"
+                android:textSize="20sp"
+                android:textColor="@android:color/white"
+                app:arrowWidth="2dp"
+                app:angle="8dp"
+                app:arrowHeight="10dp"
+                app:arrowPosition="14dp"
+                app:arrowLocation="right"
+                app:arrowCenter="true"
+                app:bubbleColor="#9900FF"/>
 
-    <Button
-        android:id="@+id/watson_btn"
-        android:layout_width="368dp"
-        android:layout_height="wrap_content"
-        android:text="Analyze text."
-        tools:layout_editor_absoluteX="8dp"
-        tools:layout_editor_absoluteY="60dp" />
 
-</android.support.constraint.ConstraintLayout>
+            <com.github.library.bubbleview.BubbleTextView
+                android:id="@+id/bubble_date"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/event_date"
+                android:layout_marginTop="10dp"
+                android:layout_alignParentEnd="true"
+                android:layout_alignParentRight="true"
+                android:textSize="20sp"
+                android:paddingRight="20dp"
+                android:padding="10dp"
+                android:textColor="@android:color/black"
+                app:arrowWidth="2dp"
+                app:angle="8dp"
+                app:arrowHeight="10dp"
+                app:arrowPosition="14dp"
+                app:arrowLocation="right"
+                app:arrowCenter="true"
+                app:bubbleColor="#ECECEC" />
+
+            <com.github.library.bubbleview.BubbleTextView
+                android:id="@+id/event_location"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/bubble_date"
+                android:layout_marginTop="10dp"
+                android:padding="10dp"
+                android:text="Our guess for Location:"
+                android:textColor="@android:color/white"
+                android:textSize="20sp"
+                app:arrowWidth="2dp"
+                app:angle="8dp"
+                app:arrowHeight="10dp"
+                app:arrowPosition="14dp"
+                app:arrowLocation="right"
+                app:arrowCenter="true"
+                app:bubbleColor="#53CE67"/>
+
+            <com.github.library.bubbleview.BubbleTextView
+                android:id="@+id/bubble_location"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/event_location"
+                android:layout_marginTop="10dp"
+                android:layout_alignParentEnd="true"
+                android:layout_alignParentRight="true"
+                android:paddingRight="20dp"
+                android:padding="10dp"
+                android:textColor="@android:color/black"
+                android:textSize="20sp"
+                app:arrowWidth="2dp"
+                app:angle="8dp"
+                app:arrowHeight="10dp"
+                app:arrowPosition="14dp"
+                app:arrowLocation="right"
+                app:arrowCenter="true"
+                app:bubbleColor="#ECECEC" />
+
+            <com.github.library.bubbleview.BubbleTextView
+                android:id="@+id/event_people"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/bubble_location"
+                android:layout_marginTop="10dp"
+                android:padding="10dp"
+                android:text="Here are the people we found:"
+                android:textSize="20sp"
+                android:textColor="@android:color/white"
+                app:arrowWidth="2dp"
+                app:angle="8dp"
+                app:arrowHeight="10dp"
+                app:arrowPosition="14dp"
+                app:arrowLocation="right"
+                app:arrowCenter="true"
+                app:bubbleColor="#E3D219"/>
+
+            <com.github.library.bubbleview.BubbleTextView
+                android:id="@+id/bubble_who"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/event_people"
+                android:layout_marginTop="10dp"
+                android:layout_alignParentEnd="true"
+                android:layout_alignParentRight="true"
+                android:paddingRight="20dp"
+                android:padding="10dp"
+                android:textColor="@android:color/black"
+                android:textSize="20sp"
+                app:arrowWidth="2dp"
+                app:angle="8dp"
+                app:arrowHeight="10dp"
+                app:arrowPosition="14dp"
+                app:arrowLocation="right"
+                app:arrowCenter="true"
+                app:bubbleColor="#ECECEC" />
+
+            <com.github.library.bubbleview.BubbleTextView
+                android:id="@+id/event_categories"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/bubble_who"
+                android:layout_marginTop="10dp"
+                android:padding="10dp"
+                android:text="We think your event corresponds to these categories:"
+                android:textColor="@android:color/white"
+                android:textSize="20sp"
+                app:arrowWidth="2dp"
+                app:angle="8dp"
+                app:arrowHeight="10dp"
+                app:arrowPosition="14dp"
+                app:arrowLocation="right"
+                app:arrowCenter="true"
+                app:bubbleColor="#009CDC"/>
+
+            <com.github.library.bubbleview.BubbleTextView
+                android:id="@+id/bubble_categories"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/event_categories"
+                android:layout_marginTop="10dp"
+                android:layout_alignParentEnd="true"
+                android:layout_alignParentRight="true"
+                android:paddingRight="20dp"
+                android:padding="10dp"
+                android:textColor="@android:color/black"
+                android:textSize="20sp"
+                app:arrowWidth="2dp"
+                app:angle="8dp"
+                app:arrowHeight="10dp"
+                app:arrowPosition="14dp"
+                app:arrowLocation="right"
+                app:arrowCenter="true"
+                app:bubbleColor="#ECECEC" />
+
+            <com.github.library.bubbleview.BubbleTextView
+                android:id="@+id/event_keywords"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/bubble_categories"
+                android:layout_marginTop="10dp"
+                android:padding="10dp"
+                android:text="Some important phrases:"
+                android:textColor="@android:color/white"
+                android:textSize="20sp"
+                app:arrowWidth="2dp"
+                app:angle="8dp"
+                app:arrowHeight="10dp"
+                app:arrowPosition="14dp"
+                app:arrowLocation="right"
+                app:arrowCenter="true"
+                app:bubbleColor="#E39319"/>
+
+            <com.github.library.bubbleview.BubbleTextView
+                android:id="@+id/bubble_keywords"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/event_keywords"
+                android:layout_marginTop="10dp"
+                android:layout_alignParentEnd="true"
+                android:layout_alignParentRight="true"
+                android:paddingRight="20dp"
+                android:padding="10dp"
+                android:textColor="@android:color/black"
+                android:textSize="15sp"
+                app:arrowWidth="2dp"
+                app:angle="8dp"
+                app:arrowHeight="10dp"
+                app:arrowPosition="14dp"
+                app:arrowLocation="right"
+                app:arrowCenter="true"
+                app:bubbleColor="#ECECEC" />
+
+            <View
+                android:id="@+id/padding_view"
+                android:layout_width="match_parent"
+                android:layout_height="30dp"
+                android:layout_below="@id/bubble_keywords" />
+
+            <Button
+                android:id="@+id/add_to_calendar"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/padding_view"
+                android:layout_centerHorizontal="true"
+                android:text="Add event to my Google calendar!"
+                android:onClick="sendEventToCalendar" />
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="30dp"
+                android:layout_below="@id/add_to_calendar" />
+
+        </RelativeLayout>
+    </ScrollView>
+</RelativeLayout>

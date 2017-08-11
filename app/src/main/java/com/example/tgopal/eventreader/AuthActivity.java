@@ -132,8 +132,6 @@ public class AuthActivity extends Activity
             mOutputText.setText("No network connection available.");
         } else {
             new MakeRequestTask(mCredential).execute();
-            Intent intent = new Intent(this, ProcessTextActivity.class);
-            startActivity(intent);
         }
     }
 

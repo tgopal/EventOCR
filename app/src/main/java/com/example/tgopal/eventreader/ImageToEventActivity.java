@@ -74,8 +74,17 @@ public class ImageToEventActivity extends AppCompatActivity  {
         return image;
     }
 
+    public void processImage(View v) {
+        TextView OCRTextView = (TextView) findViewById(R.id.OCRTextView);
+
+        Intent process = new Intent(this, ProcessTextActivity.class);
+        process.putExtra("ocr_data", OCRTextView.getText().toString());
+        startActivity(process);
+    }
+
     @Override
     protected void onActivityResult(int reqCode, int resCode, Intent data) {
+        System.out.println(data);
         if (reqCode == REQUEST_IMAGE_CAPTURE && resCode == RESULT_OK) {
             setPic();
         }
@@ -100,10 +109,6 @@ public class ImageToEventActivity extends AppCompatActivity  {
             OCRTextView.setMovementMethod(new ScrollingMovementMethod());
             OCRTextView.setText(sb.toString());
         }
-
-        Intent auth = new Intent(this, AuthActivity.class);
-        auth.putExtra("ocr_data", sb.toString());
-        startActivity(auth);
     }
 
     private void dispatchTakePictureIntent() {
