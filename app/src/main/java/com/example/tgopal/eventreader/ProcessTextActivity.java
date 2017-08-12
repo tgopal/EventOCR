@@ -139,6 +139,7 @@ public class ProcessTextActivity extends AppCompatActivity {
     public void sendEventToCalendar(View v) {
 
         Intent auth = new Intent(this, AuthActivity.class);
+        auth.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
         auth.putExtra("month", month);
         auth.putExtra("day", day);
         auth.putExtra("year", year);
@@ -147,14 +148,6 @@ public class ProcessTextActivity extends AppCompatActivity {
         auth.putExtra("keywords", keywordsRes);
         auth.putExtra("categories", categoriesRes);
         startActivity(auth);
-
-        // Initialize credentials and service object.
-        /*mCredential = GoogleAccountCredential.usingOAuth2(
-                getApplicationContext(), Arrays.asList(SCOPES))
-                .setBackOff(new ExponentialBackOff());
-        startActivityForResult(
-                mCredential.newChooseAccountIntent(),
-                REQ_CHOOSE_ACCOUNT);*/
     }
 
     @Override
